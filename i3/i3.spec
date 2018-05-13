@@ -3,13 +3,13 @@
 %endif
 
 Name:           i3
-Version:        4.15
+Version:        gaps_next 
 Release:        7%{?dist}
 Epoch:          1000
 Summary:        Improved tiling window manager
 License:        BSD
 URL:            https://i3wm.org
-Source0:        https://i3wm.org/downloads/%{name}-%{version}.tar.bz2
+Source0:        i3.tar.gz 
 Source1:        %{name}-logo.svg
 Patch0:         0001-Show-qubes-domain-in-configurable-colored-borders.patch
 
@@ -86,25 +86,25 @@ Requires:       %{name} = %{version}-%{release}
 Asciidoc and doxygen generated documentations for %{name}.
 
 %prep
-%setup -q
-%patch0 -p1
+%autosetup -p1 -n i3-%{version}
 
 # Drop /usr/bin/env lines in those which will be installed to %%_bindir.
 find . -maxdepth 1 -type f -name "i3*" -exec sed -i -e '1s;^#!/usr/bin/env perl;#!/usr/bin/perl;' {} + -print
 
 
 %build
+autoreconf --force --install
 %configure
-%make_build -C *-linux-gnu*
+%make_build -C *-linux-gnu CFLAGS+="-U_FORTIFY_SOURCE"
 
 doxygen pseudo-doc.doxygen
 mv pseudo-doc/html pseudo-doc/doxygen
 
 %install
-%make_install -C *-linux-gnu*
+%make_install -C *-linux-gnu
 
 mkdir -p %{buildroot}%{_mandir}/man1/
-install -Dpm0644 man/*.1 \
+install -Dpm0644 *-linux-gnu/man/*.1 \
         %{buildroot}%{_mandir}/man1/
 
 mkdir -p %{buildroot}%{_datadir}/pixmaps/
@@ -118,7 +118,6 @@ install -Dpm0644 %{SOURCE1} \
 %endif
 
 %files
-%doc RELEASE-NOTES-%{version}
 %license LICENSE
 %{_bindir}/%{name}*
 %{_includedir}/%{name}/
