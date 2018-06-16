@@ -6,6 +6,7 @@ install:
  - git clone https://github.com/Airblader/i3 i3-gaps_next
  - tar czfv i3.tar.gz i3-gaps_next
  - mv i3.tar.gz i3/i3.tar.gz
+ - cd i3 && sha256sum i3.tar.gz > sources
 script: ~/qubes-builder/scripts/travis-build
 env:
  - DIST_DOM0=fc25 USE_QUBES_REPO_VERSION=4.0 USE_QUBES_REPO_TESTING=1
